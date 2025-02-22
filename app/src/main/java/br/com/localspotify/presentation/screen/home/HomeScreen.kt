@@ -1,11 +1,10 @@
 package br.com.localspotify.presentation.screen.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import br.com.localspotify.presentation.atomic.atom.TextAtom
 
 @Composable
 fun HomeScreen() {
@@ -13,6 +12,6 @@ fun HomeScreen() {
         modifier = Modifier
             .fillMaxHeight()
     ) {
-
+        TextAtom(text = "TESTANDO TELA")
     }
 }
