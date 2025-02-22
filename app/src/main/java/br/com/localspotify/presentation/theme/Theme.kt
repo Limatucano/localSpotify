@@ -88,9 +88,11 @@ fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    MaterialTheme(
-        colorScheme = if (darkTheme) darkScheme else lightScheme,
-        typography = AppTypography,
-        content = content
-    )
+    CompositionLocalProvider(LocalDimen provides Dimen()) {
+        MaterialTheme(
+            colorScheme = if (darkTheme) darkScheme else lightScheme,
+            typography = AppTypography,
+            content = content
+        )
+    }
 }
