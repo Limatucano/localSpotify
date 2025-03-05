@@ -6,7 +6,10 @@ import br.com.localspotify.data.player.service.AudioController
 import br.com.localspotify.data.player.service.AudioState
 import br.com.localspotify.data.player.service.PlayerEvent
 import br.com.localspotify.domain.mapper.toRawMusic
+import br.com.localspotify.domain.usecase.AudioStateListenerUseCase
 import br.com.localspotify.domain.usecase.HandlePlayPauseUseCase
+import br.com.localspotify.domain.usecase.SeekToUseCase
+import br.com.localspotify.domain.usecase.UpgradeProgressUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,8 +18,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
-    private val audioServiceHandler: AudioController,
-    private val handlePlayPauseUseCase: HandlePlayPauseUseCase
+    private val handlePlayPauseUseCase: HandlePlayPauseUseCase,
+    private val seekToUseCase: SeekToUseCase,
+    private val upgradeProgressUseCase: UpgradeProgressUseCase,
+    private val audioStateListenerUseCase: AudioStateListenerUseCase
 ): ViewModel() {
 
     private val _uiState: MutableStateFlow<PlayerUIState> = MutableStateFlow(PlayerUIState())
@@ -24,9 +29,9 @@ class PlayerViewModel(
 
     init {
         viewModelScope.launch {
-            audioServiceHandler.state.collectLatest { state ->
+            audioStateListenerUseCase().collectLatest { state ->
                 when (state) {
-                    is AudioState.IDLE -> {}
+                    is AudioState.IDLE -> Unit
                     is AudioState.Buffering -> calculateProgress(state.progress)
                     is AudioState.Playing -> {
                         _uiState.update { uiState ->
@@ -55,33 +60,26 @@ class PlayerViewModel(
         }
     }
 
-    fun onUiEvents(uiEvents: PlayerUiEvents) {
-        viewModelScope.launch {
-            when(uiEvents) {
-                is PlayerUiEvents.Backward -> audioServiceHandler.onPlayerEvents(PlayerEvent.Backward)
-                is PlayerUiEvents.Forward -> audioServiceHandler.onPlayerEvents(PlayerEvent.Forward)
-                is PlayerUiEvents.SeekToNext -> audioServiceHandler.onPlayerEvents(PlayerEvent.SeekToNext)
-                is PlayerUiEvents.PlayPause -> handlePlayPauseUseCase()
-                is PlayerUiEvents.SeekTo -> audioServiceHandler.onPlayerEvents(
-                    playerEvent = PlayerEvent.SeekTo,
-                    seekPosition = ((_uiState.value.duration * uiEvents.position) / 100f).toLong()
+    fun updateProgress(newProgress: Long) {
+        upgradeProgressUseCase(newProgress).also {
+            _uiState.update { state ->
+                state.copy(
+                    progress = newProgress
                 )
-                is PlayerUiEvents.SelectedAudioChange -> audioServiceHandler.onPlayerEvents(
-                    playerEvent = PlayerEvent.SelectedAudioChange,
-                    selectedAudioIndex = uiEvents.index,
-                )
-                is PlayerUiEvents.UpdateProgress -> {
-                    audioServiceHandler.onPlayerEvents(
-                        playerEvent = PlayerEvent.UpdateProgress(uiEvents.newProgress)
-                    )
-                    _uiState.update { state ->
-                        state.copy(
-                            progress = uiEvents.newProgress
-                        )
-                    }
-                }
             }
         }
+    }
+
+    fun playPause() {
+        handlePlayPauseUseCase()
+    }
+
+    fun seekToNext() {
+        seekToUseCase(toNext = true)
+    }
+
+    fun seekToPrevious() {
+        seekToUseCase(toNext = false)
     }
 
     private fun calculateProgress(currentProgress: Long) {

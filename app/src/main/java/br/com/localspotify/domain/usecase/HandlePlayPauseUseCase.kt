@@ -1,5 +1,6 @@
 package br.com.localspotify.domain.usecase
 
+import br.com.localspotify.data.player.service.PlayerEvent
 import br.com.localspotify.domain.entity.Music
 import br.com.localspotify.domain.repository.PlayerRepository
 
@@ -14,6 +15,6 @@ class HandlePlayPauseUseCase(
                 playerRepository.addMusic(it)
             }
         }
-        playerRepository.handlePlayPause()
+        playerRepository.handlePlayerEvent(PlayerEvent.PlayPause)
     }
 }

@@ -40,30 +40,12 @@ class AudioController(
     }
 
     fun onPlayerEvents(
-        playerEvent: PlayerEvent,
-        selectedAudioIndex: Int = -1,
-        seekPosition: Long = 0
+        playerEvent: PlayerEvent
     ) {
         when(playerEvent) {
-            is PlayerEvent.Backward -> exoplayer.seekBack()
-            is PlayerEvent.Forward -> exoplayer.seekForward()
             is PlayerEvent.SeekToNext -> exoplayer.seekToNext()
+            is PlayerEvent.SeekToPrevious -> exoplayer.seekToPrevious()
             is PlayerEvent.PlayPause -> manageControl()
-            is PlayerEvent.Stop -> stopProgressUpdate()
-            is PlayerEvent.SeekTo -> exoplayer.seekTo(seekPosition)
-            is PlayerEvent.SelectedAudioChange -> {
-                when (selectedAudioIndex) {
-                    exoplayer.currentMediaItemIndex -> {
-                        manageControl()
-                    }
-                    else -> {
-                        exoplayer.seekToDefaultPosition(selectedAudioIndex)
-                        _state.value = AudioState.Playing(isPlaying = true)
-                        exoplayer.playWhenReady = true
-                        startProgressUpdate()
-                    }
-                }
-            }
             is PlayerEvent.UpdateProgress -> {
                 exoplayer.seekTo(playerEvent.newProgress)
             }

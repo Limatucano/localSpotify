@@ -5,6 +5,7 @@ import androidx.media3.common.util.UnstableApi
 import br.com.localspotify.data.datasource.local.PlayerDataSource
 import br.com.localspotify.data.datasource.room.dao.PlayerDao
 import br.com.localspotify.data.player.service.AudioController
+import br.com.localspotify.data.player.service.AudioState
 import br.com.localspotify.data.player.service.PlayerEvent
 import br.com.localspotify.domain.entity.Music
 import br.com.localspotify.domain.mapper.toEntity
@@ -14,6 +15,8 @@ import br.com.localspotify.domain.mapper.toModel
 import br.com.localspotify.domain.mapper.toRawMusic
 import br.com.localspotify.domain.repository.PlayerRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
 class PlayerRepositoryImpl(
@@ -35,10 +38,6 @@ class PlayerRepositoryImpl(
         return currentMediaItem?.toRawMusic(currentMediaItem.mediaMetadata.durationMs ?: 0L)
     }
 
-    override fun handlePlayPause() {
-        audioController.onPlayerEvents(PlayerEvent.PlayPause)
-    }
-
     override fun addMusic(music: Music) {
         audioController.addMediaItem(music.toMediaItem())
     }
@@ -49,5 +48,20 @@ class PlayerRepositoryImpl(
 
     override suspend fun getMusic(id: Long): Music? {
         return playerDao.get(id)?.toEntity()
+    }
+
+    override fun handlePlayerEvent(event: PlayerEvent) {
+        when(event) {
+            is PlayerEvent.SeekToPrevious ->  audioController.onPlayerEvents(PlayerEvent.SeekToPrevious)
+            is PlayerEvent.SeekToNext -> audioController.onPlayerEvents(PlayerEvent.SeekToNext)
+            is PlayerEvent.UpdateProgress -> audioController.onPlayerEvents(PlayerEvent.UpdateProgress(event.newProgress))
+            is PlayerEvent.PlayPause -> audioController.onPlayerEvents(PlayerEvent.PlayPause)
+        }
+    }
+
+    override suspend fun audioStateObserver(): Flow<AudioState> = flow {
+        audioController.state.collect {
+            emit(it)
+        }
     }
 }

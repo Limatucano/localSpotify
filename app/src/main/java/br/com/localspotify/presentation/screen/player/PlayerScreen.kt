@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,10 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.localspotify.R
-import br.com.localspotify.presentation.atomic.atom.Spacer
 import br.com.localspotify.presentation.atomic.organism.BottomBarContentOrganism
 import br.com.localspotify.presentation.screen.player.detail.DetailScreen
-import br.com.localspotify.presentation.theme.dimen
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -45,7 +42,7 @@ fun PlayerScreen(
                             image = R.drawable.album_image_sample,
                             actionIcon = actionIcon,
                             onClickItem = { showDetail = true },
-                            onClickAction = { viewModel.onUiEvents(PlayerUiEvents.PlayPause) },
+                            onClickAction = viewModel::playPause,
                             animatedVisibilityScope = this@AnimatedContent,
                             sharedTransitionScope = this@SharedTransitionLayout
                         )
@@ -60,8 +57,8 @@ fun PlayerScreen(
                             sharedTransitionScope = this@SharedTransitionLayout,
                             onClickExit = { showDetail = false },
                             progress = uiState.progress,
-                            onProgressChange = { viewModel.onUiEvents(PlayerUiEvents.UpdateProgress(it)) },
-                            onClickAction = { viewModel.onUiEvents(PlayerUiEvents.PlayPause) }
+                            onProgressChange = viewModel::updateProgress,
+                            onClickAction = viewModel::playPause
                         )
                     }
                 }
