@@ -136,7 +136,7 @@ private fun ScaffoldOrganismPreviewLightMain() {
                 Image(
                     modifier = Modifier
                         .height(MaterialTheme.dimen.lg)
-                        .width(MaterialTheme.dimen.xxhuge),
+                        .width(MaterialTheme.dimen.xxxhuge),
                     painter = painterResource(R.drawable.ic_logo),
                     contentDescription = null
                 )
@@ -165,7 +165,7 @@ private fun ScaffoldOrganismPreviewDarkMain() {
                 Image(
                     modifier = Modifier
                         .height(MaterialTheme.dimen.lg)
-                        .width(MaterialTheme.dimen.xxhuge),
+                        .width(MaterialTheme.dimen.xxxhuge),
                     painter = painterResource(R.drawable.ic_logo),
                     contentDescription = null
                 )

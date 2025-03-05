@@ -2,6 +2,7 @@ package br.com.localspotify.presentation.atomic.molecule
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
@@ -16,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import br.com.localspotify.R
+import br.com.localspotify.presentation.atomic.atom.CardImageAtom
 import br.com.localspotify.presentation.atomic.atom.Spacer
 import br.com.localspotify.presentation.atomic.atom.TextAtom
 import br.com.localspotify.presentation.theme.AppTheme
@@ -24,37 +26,22 @@ import br.com.localspotify.presentation.theme.dimen
 @Composable
 fun CardItemMolecule(
     modifier: Modifier = Modifier,
-    height: Dp = 130.dp,
-    width: Dp = 130.dp,
     title: String,
     subtitle: String? = null,
-    image: Painter? = null
+    image: Painter? = null,
+    onClickItem: () -> Unit = {}
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier.clickable { onClickItem() }
     ) {
-        Card(
-            modifier = modifier
-                .size(
-                    width = width,
-                    height = height
-                ),
-            elevation = CardDefaults.cardElevation(MaterialTheme.dimen.zero),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.inverseSurface,
-            )
-        ) {
-            image?.let {
-                Image(
-                    painter = it,
-                    contentDescription = ""
-                )
-            }
-        }
+        CardImageAtom(
+            image = image
+        )
         Spacer(MaterialTheme.dimen.xxsm)
         TextAtom(
             text = title,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            maxLines = 2
         )
         subtitle?.let {
             TextAtom(

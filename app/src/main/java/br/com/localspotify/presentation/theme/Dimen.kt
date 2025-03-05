@@ -19,7 +19,8 @@ data class Dimen(
     val xxlg: Dp = 54.dp,
     val huge: Dp = 64.dp,
     val xhuge: Dp = 84.dp,
-    val xxhuge: Dp = 104.dp
+    val xxhuge: Dp = 96.dp,
+    val xxxhuge: Dp = 104.dp
 )
 
 val LocalDimen = compositionLocalOf {

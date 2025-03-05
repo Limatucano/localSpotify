@@ -1,11 +1,13 @@
 package br.com.localspotify.di
 
-import br.com.localspotify.presentation.screen.main.MainViewModel
+import br.com.localspotify.presentation.screen.home.HomeViewModel
+import br.com.localspotify.presentation.screen.player.PlayerViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 
 object PresentationModule: KoinModule {
     override val module = module {
-        viewModelOf(::MainViewModel)
+        viewModelOf(::PlayerViewModel)
+        viewModelOf(::HomeViewModel)
     }
 }

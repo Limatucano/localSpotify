@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlinSerialization)
+    id("kotlin-parcelize")
+    id("com.google.devtools.ksp") version "2.0.21-1.0.25"
 }
 
 android {
@@ -60,6 +62,19 @@ dependencies {
     implementation(libs.koinCompose)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.material)
+    implementation(libs.media3.datasource)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+    implementation(libs.media3.common)
+    implementation(libs.media3.common.ktx)
+    implementation(libs.media3.session)
+    implementation(libs.glide)
+    implementation(libs.androidxAppcompat)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.roomRuntime)
+    implementation(libs.roomKtx)
+    annotationProcessor(libs.roomCompiler)
+    ksp(libs.roomCompiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

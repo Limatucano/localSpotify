@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">LocalSpotify</string>
+    <string name="home_music_to_save_label">Salve suas músicas favoritas</string>
+    <string name="home_music_to_save_description">As músicas salvas ficam disponíveis para ouvir depois e criar playlists.</string>
+    <string name="home_saved_music">Músicas salvas</string>
 </resources>

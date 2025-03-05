@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +39,9 @@ import br.com.localspotify.presentation.atomic.atom.Spacer
 import br.com.localspotify.presentation.atomic.atom.TextAtom
 import br.com.localspotify.presentation.theme.AppTheme
 import br.com.localspotify.presentation.theme.dimen
+import br.com.localspotify.util.formatDuration
+import br.com.localspotify.util.formatProgressByDuration
+import br.com.localspotify.util.toPercentOf
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -50,6 +54,10 @@ fun DetailScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onClickExit: () -> Unit,
     actionIcon: Painter,
+    onClickAction: () -> Unit,
+    duration: Long,
+    progress: Long = 0L,
+    onProgressChange: (Long) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -123,7 +131,32 @@ fun DetailScreen(
                     )
                 }
 
-                Spacer(MaterialTheme.dimen.lg)
+                Spacer()
+
+                Slider(
+                    value = progress.toPercentOf(duration),
+                    onValueChange = {
+                        val newPosition = (it / 100) * duration
+                        onProgressChange.invoke(newPosition.toLong())
+                    },
+                    valueRange = 0f..100f
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    TextAtom(
+                        text = progress.formatDuration()
+                    )
+
+                    TextAtom(
+                        text = duration.formatDuration()
+                    )
+                }
+
+                Spacer()
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -137,7 +170,9 @@ fun DetailScreen(
                     PlayPauseButtonAtom(
                         size = MaterialTheme.dimen.xhuge,
                         icon = actionIcon
-                    ) { }
+                    ) {
+                        onClickAction()
+                    }
 
                     Spacer(MaterialTheme.dimen.sm)
 
@@ -162,7 +197,11 @@ private fun DetailScreenPreviewLight() {
                     actionIcon = painterResource(R.drawable.ic_play),
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this,
-                    onClickExit = {}
+                    onClickExit = {},
+                    progress = 11095L,
+                    onProgressChange = {},
+                    onClickAction = {},
+                    duration = 361978L
                 )
             }
         }
@@ -183,7 +222,10 @@ private fun DetailScreenPreviewDark() {
                     actionIcon = painterResource(R.drawable.ic_play),
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this,
-                    onClickExit = {}
+                    onClickExit = {},
+                    onProgressChange = {},
+                    onClickAction = {},
+                    duration = 361978L
                 )
             }
         }
