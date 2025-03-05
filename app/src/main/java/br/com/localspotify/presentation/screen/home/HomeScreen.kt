@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,7 +33,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
@@ -79,19 +81,24 @@ fun HomeScreen(
             ) {}
         }
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
+        PullToRefreshBox(
+            isRefreshing = uiState.isLoading,
+            onRefresh = viewModel::loadData
         ) {
-            SavedMusicListOrganism(
-                music = uiState.savedMusic,
-                onClickItem = viewModel::handlePlayPause
-            )
-            Spacer(MaterialTheme.dimen.sm)
-            RawMusicListOrganism(
-                music = uiState.rawMusic,
-                onClickItem = viewModel::handlePlayPause,
-                onClickSave = viewModel::onSaveMusic
-            )
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                SavedMusicListOrganism(
+                    music = uiState.savedMusic,
+                    onClickItem = viewModel::handlePlayPause
+                )
+                Spacer(MaterialTheme.dimen.sm)
+                RawMusicListOrganism(
+                    music = uiState.rawMusic,
+                    onClickItem = viewModel::handlePlayPause,
+                    onClickSave = viewModel::onSaveMusic
+                )
+            }
         }
     }
 }

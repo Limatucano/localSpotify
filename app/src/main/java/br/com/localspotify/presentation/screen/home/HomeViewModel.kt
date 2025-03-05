@@ -7,7 +7,9 @@ import br.com.localspotify.domain.usecase.GetMusicListUseCase
 import br.com.localspotify.domain.usecase.GetRawMusicUseCase
 import br.com.localspotify.domain.usecase.HandlePlayPauseUseCase
 import br.com.localspotify.domain.usecase.SaveMusicUseCase
+import br.com.localspotify.util.launchSuspendZip
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,30 +27,26 @@ class HomeViewModel(
     val uiState: StateFlow<HomeUIState> = _uiState.asStateFlow()
 
     fun loadData() {
-        loadRawMusic()
-        loadSavedMusic()
-    }
-
-    private fun loadRawMusic() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val audioList = getRawMusicUseCase()
-            _uiState.update { state ->
-                state.copy(
-                    rawMusic = audioList,
-                )
+        viewModelScope.launchSuspendZip(
+            firstBlock = { getRawMusicUseCase() },
+            secondBlock = { getMusicListUseCase() },
+            delayMillis = 700L,
+            onLoading = {
+                _uiState.update { state ->
+                    state.copy(
+                        isLoading = it
+                    )
+                }
+            },
+            onSuccess = { (rawMusic, savedMusic) ->
+                _uiState.update { state ->
+                    state.copy(
+                        rawMusic = rawMusic,
+                        savedMusic = savedMusic
+                    )
+                }
             }
-        }
-    }
-
-    private fun loadSavedMusic() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val musicList = getMusicListUseCase()
-            _uiState.update { state ->
-                state.copy(
-                    savedMusic = musicList
-                )
-            }
-        }
+        )
     }
 
     fun handlePlayPause(music: Music) {
@@ -57,7 +55,9 @@ class HomeViewModel(
 
     fun onSaveMusic(music: Music) {
         viewModelScope.launch {
-            saveMusicUseCase(music)
+            saveMusicUseCase(music).also {
+                loadData()
+            }
         }
     }
 }

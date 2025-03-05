@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,7 +31,9 @@ fun SavedMusicListOrganism(
     onClickItem: (Music) -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(MaterialTheme.dimen.md)
+        modifier = Modifier
+            .padding(MaterialTheme.dimen.md)
+            .fillMaxWidth()
     ) {
         TextAtom(
             text = stringResource(R.string.home_saved_music),
@@ -38,16 +41,26 @@ fun SavedMusicListOrganism(
             textStyle = MaterialTheme.typography.bodyLarge
         )
         Spacer()
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimen.md)
-        ) {
-            items(music) { item ->
-                CardItemMolecule(
-                    title = item.title,
-                    subtitle = item.artist,
-                    onClickItem = { onClickItem(item) }
-                )
+        if (music.isEmpty()) {
+            Spacer()
+            TextAtom(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = stringResource(R.string.home_saved_hint),
+                maxLines = 3,
+                textStyle = MaterialTheme.typography.bodyLarge
+            )
+            Spacer()
+        } else {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimen.md)
+            ) {
+                items(music) { item ->
+                    CardItemMolecule(
+                        title = item.title,
+                        subtitle = item.artist,
+                        onClickItem = { onClickItem(item) }
+                    )
+                }
             }
         }
     }
@@ -68,6 +81,17 @@ private fun SavedMusicListOrganismPreview() {
                     artist = "TESTE ARTISTA 2"
                 )
             ),
+            onClickItem = {}
+        )
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
+@Composable
+private fun SavedMusicListOrganismEmptyPreview() {
+    AppTheme {
+        SavedMusicListOrganism(
+            music = listOf(),
             onClickItem = {}
         )
     }
